@@ -1,0 +1,102 @@
+{% load i18n thumbnail %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="{% trans 'Akvo phone. The truth, in pixels' %}" />
+  <meta name="keywords" content="Akvo phone, Akvo Phone, akvo phone" />
+
+  <title>{% block title %}Akvo phone{% endblock %}</title>
+  
+  <link rel="shortcut icon" href="{{MEDIA_URL}}img/favicon.ico" type="image/x-icon">
+
+  {% block head %}{% endblock head %}
+  
+  {% block script %}
+  {#<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> #}
+  <script type="text/javascript" src="{{MEDIA_URL}}js/jquery-1.3.2.min.js"></script>
+  
+    
+  <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={{google_maps_api_key}}"
+          type="text/javascript"></script>
+     
+  <script type="text/javascript">
+  
+    $(function(){
+        $('#container-1 > ul').tabs();
+    });
+    
+    $(document).ready(function(){
+        $(".btn-slide").click(function(){
+          $("#panel").slideToggle("slow");
+          $(this).toggleClass("active"); return false;
+        });
+    });
+      
+      var oMarker;
+  
+      function makeMap(mapId, lat, long) {    
+          var gMapDiv = document.getElementById(mapId);
+          var googMap = new GMap2(gMapDiv);
+          googMap.addControl(new GLargeMapControl3D());
+          googMap.addControl(new GMapTypeControl());
+          googMap.setCenter(new GLatLng(lat, long), 13);
+      
+          //if (oMarker)
+          //oMap.removeOverlay(oMarker)
+      
+          // add a new marker
+          oMarker = new GMarker(new GLatLng(lat, long));
+          googMap.addOverlay(oMarker);
+          return googMap;
+      };
+  
+  </script>
+  {% endblock script %}  
+</head>
+<body>
+
+  <div id="main_container" class="container">
+  {% block maincontent %}
+
+    {% for photo in photos %}
+      {% thumbnail photo.photo 400x300 upscale autocrop sharpen as da_photo %}
+      
+    <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
+    <p style="float: right; display:none; margin-bottom: 10px; cursor: pointer;" id="show_{{photo.pk}}">
+      Show map
+    </p>
+    <p class="small lightx1">
+      {{photo.original_time}} {{photo.text}}
+    </p>
+    
+    <div id="map_{{photo.pk}}" style="display: none; margin: 10px; width: 400px; height: 400px; background: red;"></div>
+
+    <script type="text/javascript">
+    
+    lat  = {{update.position.0}};
+    long = {{update.position.1}};
+    if (lat || long) {
+        $('#show_{{photo.pk}}').show();
+    }
+    
+    $('#show_{{photo.pk}}').click(function() {
+        document.getElementById("map_{{photo.pk}}").style.display = '';
+        var gMap = makeMap("map_{{photo.pk}}", {{update.position.0}}, {{update.position.1}})
+    });
+
+    </script>          
+    
+    <!--  <div style="width: 400px; height:300px; text-align: center; vertical-align: middle;">
+          <img
+              src="{{da_photo}}"
+              alt="{{photo.text}}"
+          />
+      </div>
+      <p>Position: {{photo.position}}</p>-->
+    {% endfor %}
+  {% endblock maincontent %}
+  </div>
+
+</body>
+</html>

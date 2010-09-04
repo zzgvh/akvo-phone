@@ -1,0 +1,11 @@
+.DS_Store
+.TemporaryItems
+*.kpf
+*.mo
+*.pyc
+.project
+.pydevproject
+.settings
+phone/settings_local.py
+phone/data/
+phone/mediaroot/pile/
