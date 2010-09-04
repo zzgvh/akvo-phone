@@ -2,12 +2,16 @@
 
 from django import forms
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import Context, RequestContext, loader
+from django.views.decorators.csrf import csrf_response_exempt
 from django.utils.translation import ugettext_lazy as _, get_language
 
 from models import Photo
+
+from datetime import datetime
 
 def render_to(template):
     """
@@ -43,23 +47,24 @@ class GeoUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Photo
+        fields = ('photo', 'text', )
 
 class HttpResponseNoContent(HttpResponse):
     status_code = 204    
 
+@csrf_response_exempt
 def upload_photo(request, user_id=1):
     if request.method == 'POST':
-        
 #        user = get_object_or_404(User, pk=request.POST.getitem('user', 1))
         user = get_object_or_404(User, pk=user_id)
 
         form = GeoUpdateForm(request.POST, request.FILES, )
         if form.is_valid():
             new_photo = form.save(commit=False)
-            new_photo.server_time = datetime.now()
+            new_photo.upload_time = datetime.now()
             new_photo.user = user
             new_photo.save()
-            return HttpResponse(new_photo.pk)
+            return HttpResponse(str(new_photo.id))
         return HttpResponseForbidden()
     return HttpResponseBadRequest()
 

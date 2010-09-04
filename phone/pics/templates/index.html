@@ -61,15 +61,15 @@
 
     {% for photo in photos %}
       {% thumbnail photo.photo 400x300 upscale autocrop sharpen as da_photo %}
-      
-    <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
-    <p style="float: right; display:none; margin-bottom: 10px; cursor: pointer;" id="show_{{photo.pk}}">
-      Show map
-    </p>
-    <p class="small lightx1">
-      {{photo.original_time}} {{photo.text}}
-    </p>
-    
+    <div style="margin: 10px; width: 420px;">  
+      <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
+      <p style="float: right; display:none; margin-bottom: 10px; cursor: pointer;" id="show_{{photo.pk}}">
+        Show map
+      </p>
+      <p class="small lightx1">
+        {{photo.original_time}} {{photo.text}}
+      </p>
+    </div>
     <div id="map_{{photo.pk}}" style="display: none; margin: 10px; width: 400px; height: 400px; background: red;"></div>
 
     <script type="text/javascript">
