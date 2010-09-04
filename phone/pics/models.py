@@ -91,7 +91,7 @@ class Photo(models.Model):
             for tag, value in info.items():
                 decoded = TAGS.get(tag, tag)
                 tags[decoded] = value
-            return get_lat_long(tags), tags['DateTimeOriginal']
+            return get_lat_long(tags)
         except:
             return 0.0, 0.0
 

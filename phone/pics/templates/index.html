@@ -74,15 +74,15 @@
 
     <script type="text/javascript">
     
-    lat  = {{update.position.0}};
-    long = {{update.position.1}};
+    lat  = {{photo.position.0}};
+    long = {{photo.position.1}};
     if (lat || long) {
         $('#show_{{photo.pk}}').show();
     }
     
     $('#show_{{photo.pk}}').click(function() {
         document.getElementById("map_{{photo.pk}}").style.display = '';
-        var gMap = makeMap("map_{{photo.pk}}", {{update.position.0}}, {{update.position.1}})
+        var gMap = makeMap("map_{{photo.pk}}", {{photo.position.0}}, {{photo.position.1}})
     });
 
     </script>          
