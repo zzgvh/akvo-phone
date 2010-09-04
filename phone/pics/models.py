@@ -86,7 +86,7 @@ class Photo(models.Model):
     def position(self):
         try:
             tags = {}
-            i = Image.open(self.photo.file)
+            i = Image.open(str(self.photo.file))
             info = i._getexif()    
             for tag, value in info.items():
                 decoded = TAGS.get(tag, tag)
@@ -98,7 +98,7 @@ class Photo(models.Model):
     def original_time(self):
         try:
             tags = {}
-            i = Image.open(self.photo.file)
+            i = Image.open(str(self.photo.file))
             info = i._getexif()    
             for tag, value in info.items():
                 decoded = TAGS.get(tag, tag)
