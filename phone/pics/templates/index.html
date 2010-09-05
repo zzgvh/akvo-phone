@@ -63,9 +63,15 @@
     {% for photo in photos %}
       {% thumbnail photo.photo 600x450 upscale autocrop sharpen as da_photo %}
 
-      <div style="margin-top: 10px; width: 920px;">
-        <p style="float: right; width: 300px;">
+      <div style="margin-top: 10px; width: 1250px;">
+
+        <div id="map_{{photo.pk}}" style="float: right; display: none; margin: 10px; width: 600px; height: 450px; background: red;"></div>
+
+        <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
+
+        <p style="">
           Time photo was taken: {{photo.original_time}}<br/> 
+          Time of upload: {{photo.upload_time|date:"Y:m:d H:m:s"}}<br/> 
           Photo comment: {{photo.text}}<br/>
           Precision: {{photo.hdop}} m<br/>
           Camera direction: {{photo.direction}}°<br/>
@@ -73,9 +79,8 @@
             Show map
           </span>
         </p>
-        <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
+
       </div>
-      <div id="map_{{photo.pk}}" style="display: none; margin: 10px; width: 600px; height: 450px; background: red;"></div>
   
       <script type="text/javascript">
       
