@@ -63,18 +63,19 @@
     {% for photo in photos %}
       {% thumbnail photo.photo 600x450 upscale autocrop sharpen as da_photo %}
 
-      <div style="margin: 10px; width: 800px;">
-        <div>  
-          <p style="float: right;">
-            {{photo.original_time}} {{photo.text}}
-          </p>
-          <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
-        <div/>
-        <p style="float: right; display:none; margin-bottom: 10px; cursor: pointer; clear: both;" id="show_{{photo.pk}}">
-          Show map
+      <div style="margin: 10px; width: 920px;">
+        <p style="float: right; width: 300px;">
+          Time photo was taken: {{photo.original_time}}<br/> 
+          Photo comment: {{photo.text}}<br/>
+          Precision: {{photo.hdop}} m<br/>
+          <span style="display:none; cursor: pointer; " id="show_{{photo.pk}}">
+            Show map
+          </span>
         </p>
+        <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
+      <div/>
       </div>
-      <div id="map_{{photo.pk}}" style="display: none; margin: 10px; width: 400px; height: 400px; background: red;"></div>
+      <div id="map_{{photo.pk}}" style="display: none; margin: 10px; width: 600px; height: 450px; background: red;"></div>
   
       <script type="text/javascript">
       
@@ -85,7 +86,16 @@
       }
       
       $('#show_{{photo.pk}}').click(function() {
-          document.getElementById("map_{{photo.pk}}").style.display = '';
+          map_tag = document.getElementById("map_{{photo.pk}}");
+          alert(map_tag.style.display);
+          if (map_tag.style.display) {
+            map_tag.style.display = ''
+            map_tag.innerHTML = 'Hide map';
+          } else {
+            map_tag.style.display = 'none';
+            map_tag.innerHTML = 'Show map';
+          }
+          //document.getElementById("map_{{photo.pk}}").style.display = '';
           var gMap = makeMap("map_{{photo.pk}}", {{photo.position.0}}, {{photo.position.1}})
       });
   
