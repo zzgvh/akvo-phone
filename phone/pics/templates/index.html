@@ -87,13 +87,13 @@
       
       $('#show_{{photo.pk}}').click(function() {
           map_tag = document.getElementById("map_{{photo.pk}}");
-          alert(map_tag.style.display);
+          caption_tag = document.getElementById("show_{{photo.pk}}");
           if (map_tag.style.display) {
             map_tag.style.display = ''
-            map_tag.innerHTML = 'Hide map';
+            caption_tag.innerText = 'Hide map';
           } else {
             map_tag.style.display = 'none';
-            map_tag.innerHTML = 'Show map';
+            caption_tag.innerText = 'Show map';
           }
           //document.getElementById("map_{{photo.pk}}").style.display = '';
           var gMap = makeMap("map_{{photo.pk}}", {{photo.position.0}}, {{photo.position.1}})
