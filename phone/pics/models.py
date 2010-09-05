@@ -45,14 +45,14 @@ def get_lat_long(ret):
         else:
             Nmult = -1
     
-        if ret['GPSInfo'][1] == 'E':
+        if ret['GPSInfo'][3] == 'E':
             Wmult = 1
         else:
             Wmult = -1
     
         Lat = Nmult * (Ndeg + (Nmin + Nsec/60.0)/60.0)
         Lng = Wmult * (Wdeg + (Wmin + Wsec/60.0)/60.0)
-        return Lat,Lng
+        return Lat, Lng
     except:
         return 0.0, 0.0
 
@@ -93,4 +93,4 @@ class Photo(models.Model):
 
     def original_time(self):
         tags = exif_tags(str(self.photo.file))
-        return tags['DateTimeOriginal']
+        return tags.get('DateTimeOriginal', None)
