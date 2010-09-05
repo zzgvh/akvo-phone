@@ -70,7 +70,7 @@ def upload_photo(request, user_id=1):
 
 @render_to('pics/templates/index.html')
 def photos(request):
-    photos = Photo.objects.all()
+    photos = Photo.objects.all().order_by('-upload_time')
     return {
         'photos': photos,
         'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY,
