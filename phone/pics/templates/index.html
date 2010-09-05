@@ -61,32 +61,35 @@
   {% block maincontent %}
 
     {% for photo in photos %}
-      {% thumbnail photo.photo 400x300 upscale autocrop sharpen as da_photo %}
-    <div style="margin: 10px; width: 420px;">  
-      <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
-      <p style="float: right; display:none; margin-bottom: 10px; cursor: pointer;" id="show_{{photo.pk}}">
-        Show map
-      </p>
-      <p class="small lightx1">
-        {{photo.original_time}} {{photo.text}}
-      </p>
-    </div>
-    <div id="map_{{photo.pk}}" style="display: none; margin: 10px; width: 400px; height: 400px; background: red;"></div>
+      {% thumbnail photo.photo 600x450 upscale autocrop sharpen as da_photo %}
 
-    <script type="text/javascript">
-    
-    lat  = {{photo.position.0}};
-    long = {{photo.position.1}};
-    if (lat || long) {
-        $('#show_{{photo.pk}}').show();
-    }
-    
-    $('#show_{{photo.pk}}').click(function() {
-        document.getElementById("map_{{photo.pk}}").style.display = '';
-        var gMap = makeMap("map_{{photo.pk}}", {{photo.position.0}}, {{photo.position.1}})
-    });
-
-    </script>          
+      <div style="margin: 10px; width: 800px;">
+        <div>  
+          <p style="float: right;">
+            {{photo.original_time}} {{photo.text}}
+          </p>
+          <img src="{{da_photo}}" alt="{{photo.text}}" style="margin: 10px;" />
+        <div/>
+        <p style="float: right; display:none; margin-bottom: 10px; cursor: pointer; clear: both;" id="show_{{photo.pk}}">
+          Show map
+        </p>
+      </div>
+      <div id="map_{{photo.pk}}" style="display: none; margin: 10px; width: 400px; height: 400px; background: red;"></div>
+  
+      <script type="text/javascript">
+      
+      lat  = {{photo.position.0}};
+      long = {{photo.position.1}};
+      if (lat || long) {
+          $('#show_{{photo.pk}}').show();
+      }
+      
+      $('#show_{{photo.pk}}').click(function() {
+          document.getElementById("map_{{photo.pk}}").style.display = '';
+          var gMap = makeMap("map_{{photo.pk}}", {{photo.position.0}}, {{photo.position.1}})
+      });
+  
+      </script>          
     
     <!--  <div style="width: 400px; height:300px; text-align: center; vertical-align: middle;">
           <img

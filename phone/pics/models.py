@@ -85,6 +85,7 @@ class Photo(models.Model):
                 thumbnail={'size': (240, 180), 'options': ('autocrop', 'detail', )}, #detail is a mild sharpen
                 #help_text=_(''),
             )
+    hdop = models.FloatField(_(u'Precition of position'), default=0, blank=True)
     text = models.CharField(max_length=512, blank=True)
     upload_time = models.DateTimeField()
     
