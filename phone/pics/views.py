@@ -47,7 +47,7 @@ class GeoUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Photo
-        fields = ('photo', 'text', 'hdop', )
+        fields = ('photo', 'text', 'hdop', 'direction', )
 
 class HttpResponseNoContent(HttpResponse):
     status_code = 204    

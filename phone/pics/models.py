@@ -86,6 +86,7 @@ class Photo(models.Model):
                 #help_text=_(''),
             )
     hdop = models.FloatField(_(u'Precition of position'), default=0, blank=True)
+    direction  = models.FloatField(_(u'Direction of camera'), default=0, blank=True)
     text = models.CharField(max_length=512, blank=True)
     upload_time = models.DateTimeField()
     
