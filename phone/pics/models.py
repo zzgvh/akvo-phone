@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 
+# Django imports
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+# Django app imports
 from sorl.thumbnail.fields import ImageWithThumbnailsField
+
+# Python libraries iports
+from PIL import Image
+from PIL.ExifTags import TAGS
+
 
 def image_path(instance, file_name, path_template='photo/%(instance_pk)s/%(file_name)s'):
     """
@@ -22,50 +29,48 @@ def image_path(instance, file_name, path_template='photo/%(instance_pk)s/%(file_
         instance_pk = 'temp'
     return path_template % locals()
 
-def tagbit_to_float(bit):
-    bit = str(bit)
-    bit = bit.split('/')
-    if len(bit) == 2: #fraction
-        return float(bit[0])/float(bit[1])
-    else:
-        return float(bit[0])
-
-def exif_coord_to_decimal(pos_tag, ref_tag):
-    '''
-    takes an exif GPS GPSLatitude or GPS GPSLongitude tag and converts into a decimal coordinate
-    '''
-    pos_tag = pos_tag.values
-    degrees = tagbit_to_float(pos_tag[0])
-    minutes = tagbit_to_float(pos_tag[1])
-    seconds = tagbit_to_float(pos_tag[2])
-    decimal = degrees + minutes/60.0 + seconds/3600.0
-    return decimal * (1 if ref_tag in ('N', 'E') else -1)
-    
-from PIL import Image
-from PIL.ExifTags import TAGS
 
 
 def get_lat_long(ret):
-    Nsec = ret['GPSInfo'][2][2][0] / float(ret['GPSInfo'][2][2][1])
-    Nmin = ret['GPSInfo'][2][1][0] / float(ret['GPSInfo'][2][1][1])
-    Ndeg = ret['GPSInfo'][2][0][0] / float(ret['GPSInfo'][2][0][1])
-    Wsec = ret['GPSInfo'][4][2][0] / float(ret['GPSInfo'][4][2][1])
-    Wmin = ret['GPSInfo'][4][1][0] / float(ret['GPSInfo'][4][1][1])
-    Wdeg = ret['GPSInfo'][4][0][0] / float(ret['GPSInfo'][4][0][1])
+    try:
+        Nsec = ret['GPSInfo'][2][2][0] / float(ret['GPSInfo'][2][2][1])
+        Nmin = ret['GPSInfo'][2][1][0] / float(ret['GPSInfo'][2][1][1])
+        Ndeg = ret['GPSInfo'][2][0][0] / float(ret['GPSInfo'][2][0][1])
+        Wsec = ret['GPSInfo'][4][2][0] / float(ret['GPSInfo'][4][2][1])
+        Wmin = ret['GPSInfo'][4][1][0] / float(ret['GPSInfo'][4][1][1])
+        Wdeg = ret['GPSInfo'][4][0][0] / float(ret['GPSInfo'][4][0][1])
+    
+        if ret['GPSInfo'][1] == 'N':
+            Nmult = 1
+        else:
+            Nmult = -1
+    
+        if ret['GPSInfo'][1] == 'E':
+            Wmult = 1
+        else:
+            Wmult = -1
+    
+        Lat = Nmult * (Ndeg + (Nmin + Nsec/60.0)/60.0)
+        Lng = Wmult * (Wdeg + (Wmin + Wsec/60.0)/60.0)
+        return Lat,Lng
+    except:
+        return 0.0, 0.0
 
-    if ret['GPSInfo'][1] == 'N':
-        Nmult = 1
-    else:
-        Nmult = -1
-
-    if ret['GPSInfo'][1] == 'E':
-        Wmult = 1
-    else:
-        Wmult = -1
-
-    Lat = Nmult * (Ndeg + (Nmin + Nsec/60.0)/60.0)
-    Lng = Wmult * (Wdeg + (Wmin + Wsec/60.0)/60.0)
-    return Lat,Lng
+def exif_tags(fname):
+    """
+    populate tags with all EXIF data from an image
+    fname is the full path file name if the image
+    """
+    try:
+        tags = {}
+        image = Image.open(fname)
+        info = image._getexif()    
+        for tag, value in info.items():
+            decoded = TAGS.get(tag, tag)
+            tags[decoded] = value
+        return tags
+    except:
+        return {}
 
 class Photo(models.Model):
     def creat_image_path(instance, file_name):
@@ -84,25 +89,8 @@ class Photo(models.Model):
     upload_time = models.DateTimeField()
     
     def position(self):
-        try:
-            tags = {}
-            i = Image.open(str(self.photo.file))
-            info = i._getexif()    
-            for tag, value in info.items():
-                decoded = TAGS.get(tag, tag)
-                tags[decoded] = value
-            return get_lat_long(tags)
-        except:
-            return 0.0, 0.0
+        return get_lat_long(exif_tags(str(self.photo.file)))
 
     def original_time(self):
-        try:
-            tags = {}
-            i = Image.open(str(self.photo.file))
-            info = i._getexif()    
-            for tag, value in info.items():
-                decoded = TAGS.get(tag, tag)
-                tags[decoded] = value
-            return tags['DateTimeOriginal']
-        except:
-            return None
+        tags = exif_tags(str(self.photo.file))
+        return tags['DateTimeOriginal']

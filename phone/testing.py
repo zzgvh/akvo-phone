@@ -33,7 +33,7 @@ def get_lat_long(ret):
     else:
         Nmult = -1
 
-    if ret['GPSInfo'][1] == 'E':
+    if ret['GPSInfo'][3] == 'E':
         Wmult = 1
     else:
         Wmult = -1
@@ -53,9 +53,31 @@ def exif_coord_to_decimal(pos_tag, ref_tag):
     decimal = degrees + minutes/60.0 + seconds/3600.0
     return decimal * (1 if ref_tag in ('N', 'E') else -1)
 
+
+def exif_tags(fname):
+#    try:
+        tags = {}
+        image = Image.open(fname)
+        info = image._getexif()    
+        for tag, value in info.items():
+            decoded = TAGS.get(tag, tag)
+            tags[decoded] = value
+        return tags
+#    except:
+        return {}
+
+
 def main():
     p = Photo.objects.get(pk=1)
-    print p.position()
+#    print p.position()
+#    print p.original_time()
+#    print p.upload_time
+    tags = exif_tags(str(p.photo.file))
+    print str(p.photo.file)
+    for t in tags:
+        print t
+        if t == 'GPSInfo':
+            print tags[t]
 
 #    tags = {}
 #    i = Image.open(p.photo.file)
